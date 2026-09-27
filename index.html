@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NanoPattern AI — Nanofabrication Design Studio</title>
+<style>
+:root{
+  --bg:#0d0f12;--bg2:#111419;--panel:#15181d;--panel2:#191d23;--panel3:#20252c;
+  --line:#2a3038;--line2:#39414c;--text:#f3f5f7;--muted:#9099a6;--dim:#66707d;
+  --accent:#5aa7ff;--accent2:#2f7bdc;--accentSoft:rgba(90,167,255,.12);
+  --ok:#7fd1a3;--warn:#e7b96c;--fail:#ef7d88;--shadow:0 18px 55px rgba(0,0,0,.30);--radius:12px
+}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden;background:
+ radial-gradient(1000px 480px at 52% -15%,rgba(90,167,255,.075),transparent 66%),
+ linear-gradient(180deg,#0d0f12 0%,#0f1216 100%)}
+button,input,select,textarea{font:inherit}.app{height:100vh;display:grid;grid-template-rows:62px 1fr 27px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(13,15,18,.94);backdrop-filter:blur(18px);z-index:10;box-shadow:0 1px 0 rgba(255,255,255,.02)}
+.brand{display:flex;align-items:center;gap:13px}.mark{width:34px;height:34px;border:1px solid #48515d;border-radius:8px;position:relative;background:linear-gradient(145deg,#1d2228,#12151a);box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)}
+.mark:before{content:"";position:absolute;inset:8px 5px;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:skewX(-24deg);opacity:.95}.mark:after{content:"";position:absolute;left:9px;right:9px;top:15px;height:2px;background:#d8dde5;box-shadow:0 0 9px rgba(90,167,255,.35)}
+.brand strong{font-size:14px;letter-spacing:.015em}.brand span{font-size:9px;color:var(--muted);display:block;margin-top:2px;text-transform:uppercase;letter-spacing:.11em}.top-actions{display:flex;align-items:center;gap:8px}.pill{font-size:9px;color:#b4bcc7;border:1px solid var(--line2);padding:6px 9px;border-radius:999px;background:#14181d;text-transform:uppercase;letter-spacing:.08em}.pill i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:6px;box-shadow:0 0 7px rgba(127,209,163,.5)}
+.btn{border:1px solid var(--line2);background:#1a1f25;color:#e7ebf0;border-radius:7px;padding:7px 11px;cursor:pointer;font-size:10px;font-weight:650;letter-spacing:.01em;transition:.15s ease}.btn:hover{background:#222831;border-color:#56606d;transform:translateY(-1px)}.btn.primary{background:var(--accent);border-color:var(--accent);color:#08111c}.btn.primary:hover{background:#75b6ff}.btn.ghost{background:transparent}.btn.icon{width:31px;height:31px;padding:0;display:grid;place-items:center}
+.workspace{min-height:0;display:grid;grid-template-columns:286px minmax(560px,1fr) 350px}.left,.right{min-height:0;overflow:auto;background:rgba(18,21,26,.94)}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}
+.left::-webkit-scrollbar,.right::-webkit-scrollbar,.table-wrap::-webkit-scrollbar,.chat::-webkit-scrollbar{width:9px;height:9px}.left::-webkit-scrollbar-thumb,.right::-webkit-scrollbar-thumb,.table-wrap::-webkit-scrollbar-thumb,.chat::-webkit-scrollbar-thumb{background:#343b45;border:2px solid #171b20;border-radius:8px}
+.panel-head{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#15191e;z-index:4}.panel-head b{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#d0d6dd}.panel-head span{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.panel-body{padding:14px}.section{margin-bottom:20px}.section-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;font-size:9px;color:#7f8996;text-transform:uppercase;letter-spacing:.15em}.section-title:after{content:"";height:1px;flex:1;background:#2a3038;margin-left:10px}
+.field{margin-bottom:10px}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field label{display:flex;justify-content:space-between;font-size:10px;color:#a7b0bb;margin:0 0 5px}.field label em{font-style:normal;color:#626d79}.field input,.field select{width:100%;height:34px;color:#eef1f4;background:#101318;border:1px solid #313841;border-radius:6px;padding:0 9px;outline:none;font-size:10px}.field input:focus,.field select:focus{border-color:#5a92d7;box-shadow:0 0 0 2px rgba(90,167,255,.10)}
+input[type=file]{padding:6px 7px!important;color:#8f99a6!important}.range-row{display:grid;grid-template-columns:1fr 61px;gap:7px;align-items:center}.range-row input[type=range]{accent-color:var(--accent);padding:0;border:0;background:transparent;height:20px}.range-row input[type=number]{height:31px}
+.mode-card{display:grid;grid-template-columns:40px 1fr auto;gap:9px;align-items:center;padding:10px;border:1px solid #303740;border-radius:8px;background:linear-gradient(145deg,#1a1e24,#15191e);margin-bottom:8px;cursor:pointer;transition:.15s ease}.mode-card:hover{border-color:#4d5764;background:#1d2229}.mode-card.active{border-color:#4f85c6;background:linear-gradient(145deg,#1b2633,#171c22);box-shadow:inset 3px 0 0 var(--accent)}.mode-icon{height:35px;border:1px solid #3b4652;border-radius:6px;display:grid;place-items:center;color:#cfd6de;font-size:14px;background:linear-gradient(180deg,#20252c,#171b21);position:relative;overflow:hidden}.mode-icon:after{content:"";position:absolute;inset:7px;background:repeating-linear-gradient(90deg,transparent 0 5px,rgba(90,167,255,.38) 5px 7px);opacity:.6}.mode-card b{font-size:10.5px}.mode-card p{margin:3px 0 0;color:#737e8a;font-size:8.5px}.radio{width:9px;height:9px;border:1px solid #59636f;border-radius:50%}.active .radio{background:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 0 2px #17202a}
+.center{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(380px,1fr) 220px;background:#0e1115}.viewport-card{position:relative;min-height:0;border-bottom:1px solid var(--line);overflow:hidden}.view-toolbar{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line);background:#14181d}.crumb{display:flex;align-items:center;gap:7px;font-size:10px}.crumb b{font-size:11px;letter-spacing:.02em}.crumb span{color:#69737f}.toolset{display:flex;gap:5px}.tool{height:28px;min-width:28px;padding:0 8px;border:1px solid #333b45;border-radius:6px;background:#171b20;color:#98a2ae;font-size:9px;cursor:pointer;text-transform:uppercase;letter-spacing:.06em}.tool.active,.tool:hover{color:#f2f5f7;border-color:#568fd2;background:#1b2530}
+.viewer{height:calc(100% - 46px);position:relative;overflow:hidden;background:
+ linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px),
+ linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px),
+ radial-gradient(600px 230px at 50% 47%,rgba(90,167,255,.055),transparent 75%),#0c0f13;background-size:100px 100px,100px 100px,20px 20px,20px 20px,auto}
+.viewer:before{content:"EBL / NANOSTRUCTURE VIEW";position:absolute;left:16px;bottom:14px;font-size:8px;letter-spacing:.18em;color:#46505c;z-index:1}.viewer:after{content:"";position:absolute;left:15px;bottom:34px;width:100px;height:1px;background:#8a95a2;box-shadow:0 0 0 1px rgba(255,255,255,.01)}
+.viewer svg{width:100%;height:100%;display:block;position:relative;z-index:2}.beam{fill:url(#beamFill);stroke:#8a96a4;stroke-width:1}.beam-edge{stroke:#68737f;fill:none}.centerline{stroke:#3f4955;stroke-width:.75;stroke-dasharray:4 6}.hole{fill:#0b0e12;stroke:#86bfff;stroke-width:1.15;filter:url(#glow)}.hole.warn{stroke:var(--warn)}.hole.fail{stroke:var(--fail);stroke-width:1.9;filter:url(#glowRed)}.hole:hover{stroke-width:2.1}.measure{stroke:#697581;stroke-width:.75;stroke-dasharray:3 3}.measure-text{fill:#9aa5b1;font-size:9px}.axis-text{fill:#6c7783;font-size:9px}.region-label{fill:#a5afb9;font-size:8px;letter-spacing:.16em}.dim-line{stroke:#5c6672;stroke-width:.7}.dim-cap{stroke:#5c6672;stroke-width:.7}
+.hud{position:absolute;left:14px;top:14px;display:flex;gap:7px;pointer-events:none;z-index:3}.hud-card{min-width:78px;background:rgba(18,22,27,.90);backdrop-filter:blur(9px);border:1px solid #39414b;border-radius:7px;padding:7px 9px;font-size:8px;color:#74808c;text-transform:uppercase;letter-spacing:.07em}.hud-card b{color:#f0f3f6;font-size:11px;letter-spacing:0}.legend{position:absolute;right:13px;bottom:12px;display:flex;gap:9px;background:rgba(17,21,26,.90);border:1px solid #343c46;border-radius:7px;padding:7px 9px;font-size:8px;color:#858f9b;z-index:3;text-transform:uppercase;letter-spacing:.04em}.legend i{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px}.legend .p{background:var(--accent)}.legend .w{background:var(--warn)}.legend .f{background:var(--fail)}
+.overview{position:absolute;right:13px;top:13px;width:165px;height:78px;border:1px solid #39414b;border-radius:7px;background:rgba(15,18,23,.91);overflow:hidden;z-index:3;box-shadow:0 8px 22px rgba(0,0,0,.18)}.overview:before{content:"OVERVIEW";position:absolute;left:7px;top:5px;font-size:6.5px;letter-spacing:.14em;color:#66717d;z-index:2}.overview svg{width:100%;height:100%}
+.bottom{min-height:0;background:#14181d}.tabs{height:36px;display:flex;align-items:end;border-bottom:1px solid var(--line);padding-left:8px}.tab{height:35px;padding:0 12px;display:flex;align-items:center;font-size:9px;color:#76818e;border-bottom:2px solid transparent;cursor:pointer;text-transform:uppercase;letter-spacing:.06em}.tab.active{color:#eef2f5;border-bottom-color:var(--accent)}.table-wrap{height:184px;overflow:auto}table{border-collapse:collapse;width:100%;font-size:9.5px}th,td{height:30px;padding:0 10px;border-bottom:1px solid #222831;text-align:right;white-space:nowrap}th{position:sticky;top:0;background:#151a20;color:#727e8b;font-weight:650;z-index:2;text-transform:uppercase;font-size:8px;letter-spacing:.05em}th:first-child,td:first-child{text-align:left}td{color:#bcc4cc}.tag{font-size:7px;padding:3px 6px;border-radius:999px;border:1px solid;font-weight:700;letter-spacing:.04em}.tag.pass{color:#a2dbb8;border-color:#355946;background:#16251d}.tag.warn{color:#e8c584;border-color:#62523a;background:#261f15}.tag.fail{color:#f1a2aa;border-color:#633942;background:#27171a}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}.metric{padding:10px 9px;border:1px solid #303741;border-radius:8px;background:#181c22}.metric span{font-size:7px;color:#737f8c;display:block;text-transform:uppercase;letter-spacing:.11em}.metric b{font-size:18px;line-height:1.3}.metric.pass b{color:var(--ok)}.metric.warn b{color:var(--warn)}.metric.fail b{color:var(--fail)}
+.health{display:flex;align-items:center;gap:12px;padding:11px;border:1px solid #303741;border-radius:9px;background:linear-gradient(145deg,#191e24,#15191e);margin-bottom:12px}.donut{width:48px;height:48px;border-radius:50%;background:conic-gradient(var(--accent) 0deg,var(--accent) var(--health-angle),#2a313a var(--health-angle));display:grid;place-items:center;position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}.donut:after{content:"";width:36px;height:36px;border-radius:50%;background:#171b20;position:absolute}.donut b{font-size:10px;z-index:1}.health-copy b{font-size:10px}.health-copy p{margin:3px 0 0;font-size:8.5px;color:#76818e;line-height:1.4}
+.check{padding:8px 9px;border:1px solid #2b323b;border-radius:7px;background:#171b20;margin-bottom:6px}.check-top{display:flex;align-items:center;justify-content:space-between}.check b{font-size:9.5px}.check small{font-size:7px;padding:2px 5px;border-radius:4px;letter-spacing:.05em}.check small.ok{color:#a4ddb9;background:#17271e}.check small.bad{color:#f0a1a8;background:#2b171b}.check p{margin:4px 0 0;color:#747f8b;font-size:8.4px;line-height:1.35}
+.ai-wrap{border-top:1px solid var(--line);margin:16px -14px 0;padding:14px 14px 0}.ai-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.ai-title b{font-size:10px;text-transform:uppercase;letter-spacing:.08em}.ai-title span{font-size:7px;color:#6e7a87;border:1px solid #343c46;border-radius:999px;padding:3px 6px;letter-spacing:.08em}.chat{height:170px;overflow:auto;padding-right:2px;margin-bottom:8px}.msg{font-size:9px;line-height:1.48;padding:8px 9px;border-radius:7px;margin-bottom:7px;border:1px solid #2b333d}.msg.ai{background:#171c22;color:#bfc7cf;border-left:2px solid #4f91dd}.msg.user{background:#1c232b;color:#e6eaee;margin-left:22px}.msg strong{color:#f3f5f7}.msg em{color:#c7d5e6}.msg .cmd{display:block;margin-top:6px;color:#7eaee7}.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}.chip{border:1px solid #343d47;background:#171b20;color:#8f9aa6;border-radius:999px;padding:5px 7px;font-size:7.5px;cursor:pointer}.chip:hover{border-color:#567ba7;color:#dce8f5}.composer{display:grid;grid-template-columns:1fr 34px;gap:6px}.composer textarea{height:49px;resize:none;color:#edf1f4;background:#101318;border:1px solid #343b45;border-radius:7px;padding:8px 9px;outline:none;font-size:9px;line-height:1.35}.composer textarea:focus{border-color:#5a90d0;box-shadow:0 0 0 2px rgba(90,167,255,.08)}.send{border:0;border-radius:7px;background:var(--accent);color:#08111b;font-size:16px;cursor:pointer;font-weight:800}.send:hover{background:#74b6ff}.ai-note{font-size:7.5px;color:#5f6975;line-height:1.4;margin-top:7px}
+.statusbar{display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:#0c0f12;border-top:1px solid #242a32;color:#626d79;font-size:7.5px;text-transform:uppercase;letter-spacing:.06em}.statusbar>div{display:flex;gap:16px}.statusbar b{color:#9ba5b0;font-weight:600}.toast{position:fixed;left:50%;bottom:38px;transform:translate(-50%,10px);background:#20262d;border:1px solid #3a434e;color:#e9edf1;border-radius:7px;padding:8px 12px;font-size:9px;opacity:0;pointer-events:none;transition:.18s;box-shadow:var(--shadow);z-index:99}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1100px){.workspace{grid-template-columns:250px minmax(500px,1fr) 310px}.brand span{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="mark"></div><div><strong>NanoPattern AI</strong><span>Nanofabrication Design Studio · v0.3</span></div></div>
+  <div class="top-actions"><span class="pill"><i></i>Standalone · local engine</span><button class="btn ghost" id="newDesign">New</button><button class="btn" id="exportSvg">Export SVG</button><button class="btn primary" id="exportCsv">Export CSV</button></div>
+</header>
+
+<div class="workspace">
+<aside class="left">
+  <div class="panel-head"><b>Design Parameters</b><span>nm units</span></div>
+  <div class="panel-body">
+    <div class="section">
+      <div class="section-title">Device template</div>
+      <div class="mode-card active" data-template="nanobeam"><div class="mode-icon">◉</div><div><b>Phononic nanobeam</b><p>mirror · taper · cavity</p></div><div class="radio"></div></div>
+      <div class="mode-card" data-template="array"><div class="mode-icon">⠿</div><div><b>Periodic hole array</b><p>uniform pitch + diameter</p></div><div class="radio"></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Substrate</div>
+      <div class="row"><div class="field"><label>Beam width <em>W</em></label><input id="beamWidth" type="number" value="500" min="100" step="10"></div><div class="field"><label>Beam length <em>L</em></label><input id="beamLength" type="number" value="15000" min="1000" step="100"></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Lattice</div>
+      <div class="row"><div class="field"><label>Mirror / side</label><input id="mirrorCount" type="number" value="8" min="1" max="50"></div><div class="field"><label>Taper / side</label><input id="taperCount" type="number" value="5" min="0" max="30"></div></div>
+      <div class="field"><label>Mirror diameter <em>dₘ</em></label><div class="range-row"><input id="mirrorDiaRange" type="range" min="50" max="450" step="5" value="250"><input id="mirrorDia" type="number" value="250" min="20" step="5"></div></div>
+      <div class="field"><label>Cavity diameter <em>d꜀</em></label><div class="range-row"><input id="cavityDiaRange" type="range" min="50" max="450" step="5" value="275"><input id="cavityDia" type="number" value="275" min="20" step="5"></div></div>
+      <div class="row"><div class="field"><label>Mirror pitch <em>aₘ</em></label><input id="mirrorPitch" type="number" value="550" min="30" step="5"></div><div class="field"><label>Cavity pitch <em>a꜀</em></label><input id="cavityPitch" type="number" value="500" min="30" step="5"></div></div>
+      <div class="field"><label>Central cavity separation</label><input id="cavityGap" type="number" value="500" min="30" step="5"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Process rule deck</div>
+      <div class="row"><div class="field"><label>Min feature</label><input id="minFeature" type="number" value="60" min="1"></div><div class="field"><label>Min edge gap</label><input id="minGap" type="number" value="80" min="1"></div></div>
+      <div class="field"><label>Max taper Δd</label><input id="maxTaperStep" type="number" value="30" min="1"></div>
+      <button class="btn primary" id="verify" style="width:100%;height:34px">Regenerate + verify</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Import</div>
+      <div class="field"><label>CSV · x_nm, diameter_nm, region</label><input id="csvFile" type="file" accept=".csv,text/csv"></div>
+    </div>
+  </div>
+</aside>
+
+<main class="center">
+  <section class="viewport-card">
+    <div class="view-toolbar"><div class="crumb"><b id="designName">PNB-001</b><span>/</span><span id="templateName">phononic_nanobeam</span></div><div class="toolset"><button class="tool active" data-view="cad">CAD</button><button class="tool" data-view="sem">SEM</button><button class="tool" id="fitView">Fit</button><button class="tool" id="toggleDims">Dimensions</button></div></div>
+    <div class="viewer" id="viewer">
+      <svg id="svg" viewBox="0 0 1200 560" aria-label="NanoPattern device viewer"></svg>
+      <div class="hud"><div class="hud-card"><b id="hudCount">0</b><br>features</div><div class="hud-card"><b id="hudGap">—</b><br>min gap</div><div class="hud-card"><b id="hudSpan">—</b><br>pattern span</div></div>
+      <div class="overview"><svg id="overviewSvg" viewBox="0 0 300 120"></svg></div>
+      <div class="legend"><span><i class="p"></i>pass</span><span><i class="w"></i>warning</span><span><i class="f"></i>violation</span></div>
+    </div>
+  </section>
+  <section class="bottom">
+    <div class="tabs"><div class="tab active">Geometry</div><div class="tab">Violations</div><div class="tab">Process summary</div></div>
+    <div class="table-wrap"><table><thead><tr><th>#</th><th>Region</th><th>X (nm)</th><th>Ø (nm)</th><th>Pitch (nm)</th><th>Edge gap (nm)</th><th>ΔØ (nm)</th><th>Status</th></tr></thead><tbody id="tableBody"></tbody></table></div>
+  </section>
+</main>
+
+<aside class="right">
+  <div class="panel-head"><b>Verification / Copilot</b><span id="checkedTime">live</span></div>
+  <div class="panel-body">
+    <div class="health"><div class="donut" id="healthDonut" style="--health-angle:0deg"><b id="healthScore">0%</b></div><div class="health-copy"><b id="healthTitle">Checking design</b><p id="healthText">Deterministic geometry verification</p></div></div>
+    <div class="metrics"><div class="metric pass"><span>Pass</span><b id="metricPass">0</b></div><div class="metric warn"><span>Warn</span><b id="metricWarn">0</b></div><div class="metric fail"><span>Fail</span><b id="metricFail">0</b></div></div>
+    <div id="checks"></div>
+
+    <div class="ai-wrap">
+      <div class="ai-title"><b>NanoPattern Copilot</b><span>OFFLINE · EXECUTABLE</span></div>
+      <div class="chat" id="assistantBox">
+        <div class="msg ai"><strong>Design copilot ready.</strong> I can modify this device through validated commands, diagnose DRC failures, or auto-repair spacing. Try a normal instruction such as <em>“make every gap at least 120 nm”</em> or <em>“optimize this pattern and explain what changed.”</em></div>
+      </div>
+      <div class="chips"><button class="chip" data-command="fix all DRC failures">Fix DRC</button><button class="chip" data-command="explain the current design">Explain design</button><button class="chip" data-command="make minimum gap 120 nm">Gap ≥120 nm</button><button class="chip" data-command="optimize taper smoothness">Smooth taper</button></div>
+      <div class="composer"><textarea id="aiInput" placeholder="Ask NanoPattern to modify or inspect the design…"></textarea><button class="send" id="aiRun" title="Run command">➜</button></div>
+      <div class="ai-note">The copilot changes parameters; all distances, overlaps and rule checks are recomputed by the deterministic geometry engine.</div>
+    </div>
+  </div>
+</aside>
+</div>
+<footer class="statusbar"><div><span>ENGINE <b>geometry.local</b></span><span>UNITS <b>nm</b></span><span>GRID <b>20 nm</b></span></div><div><span id="statusPattern">pattern ready</span><span id="statusCursor">x 0.000 µm · y 0.000 µm</span></div></footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id); const NS='http://www.w3.org/2000/svg';
+let holes=[], template='nanobeam', viewMode='cad', showDims=false;
+const val=id=>+$(id).value; const lerp=(a,b,t)=>a+(b-a)*t;
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function setVal(id,v){$(id).value=Math.round(v*1000)/1000; const r=$(id+'Range'); if(r)r.value=$(id).value}
+function syncPair(rangeId,numId){$(rangeId).addEventListener('input',()=>{setVal(numId,+$(rangeId).value);buildPattern()});$(numId).addEventListener('input',()=>{$(rangeId).value=$(numId).value;buildPattern()})}
+syncPair('mirrorDiaRange','mirrorDia');syncPair('cavityDiaRange','cavityDia');
+
+function buildPattern(){
+  holes=[]; const mc=Math.max(1,Math.floor(val('mirrorCount'))),tc=Math.max(0,Math.floor(val('taperCount'))),md=val('mirrorDia'),cd=val('cavityDia'),mp=val('mirrorPitch'),cp=val('cavityPitch'),cg=val('cavityGap');
+  if(template==='array'){
+    const n=mc*2+tc*2; const d=md,a=mp; for(let i=0;i<n;i++) holes.push({x:(i-(n-1)/2)*a,diameter:d,region:'Array'});
+  }else{
+    const right=[]; let x=cg/2;
+    for(let i=0;i<tc;i++){const t=tc<=1?0:i/(tc-1);const d=lerp(cd,md,t),a=lerp(cp,mp,t);right.push({x,diameter:d,region:'Taper'});x+=a}
+    for(let i=0;i<mc;i++){right.push({x,diameter:md,region:'Mirror'});x+=mp}
+    holes=right.map(h=>({x:-h.x,diameter:h.diameter,region:h.region})).reverse().concat(right);
+  }
+  analyzeAndRender();
+}
+function analyze(){
+  holes.sort((a,b)=>a.x-b.x); const mf=val('minFeature'),mg=val('minGap'),mts=val('maxTaperStep'); let pass=0,warn=0,fail=0; const rows=[];
+  holes.forEach((h,i)=>{const p=holes[i-1];let pitch=null,gap=null,delta=null,status='PASS';const reasons=[];
+    if(h.diameter<mf){status='FAIL';reasons.push(`diameter ${h.diameter.toFixed(1)} nm < ${mf} nm minimum`)}
+    if(p){pitch=h.x-p.x;gap=pitch-(h.diameter+p.diameter)/2;delta=Math.abs(h.diameter-p.diameter);if(gap<mg){status='FAIL';reasons.push(`edge gap ${gap.toFixed(1)} nm < ${mg} nm rule`)}if(delta>mts&&status!=='FAIL'&&(h.region==='Taper'||p.region==='Taper')){status='WARN';reasons.push(`diameter step ${delta.toFixed(1)} nm > ${mts} nm preference`)}}
+    status==='FAIL'?fail++:status==='WARN'?warn++:pass++;rows.push({...h,pitch,gap,delta,status,reasons});
+  });
+  const gaps=rows.filter(r=>Number.isFinite(r.gap)).map(r=>r.gap),dias=rows.map(r=>r.diameter); const span=holes.length?holes.at(-1).x-holes[0].x:0;
+  return {rows,pass,warn,fail,minGapObserved:gaps.length?Math.min(...gaps):0,minDia:dias.length?Math.min(...dias):0,overlap:gaps.some(g=>g<0),symmetric:isSymmetric(),span,score:holes.length?Math.round((pass+.5*warn)/holes.length*100):0};
+}
+function isSymmetric(){for(let i=0;i<Math.floor(holes.length/2);i++){const a=holes[i],b=holes[holes.length-1-i];if(Math.abs(a.x+b.x)>.01||Math.abs(a.diameter-b.diameter)>.01)return false}return true}
+function analyzeAndRender(){const r=analyze();renderSvg(r);renderOverview(r);renderTable(r);renderChecks(r);renderHealth(r);$('hudCount').textContent=holes.length;$('hudGap').textContent=`${r.minGapObserved.toFixed(1)} nm`;$('hudSpan').textContent=`${(r.span/1000).toFixed(2)} µm`;$('statusPattern').textContent=r.fail?`${r.fail} DRC violation${r.fail>1?'s':''}`:'DRC clean';$('checkedTime').textContent='live';}
+function svgEl(name,attrs={}){const e=document.createElementNS(NS,name);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e}
+function renderSvg(r){
+ const svg=$('svg');svg.innerHTML=`<defs><linearGradient id="beamFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${viewMode==='sem'?'#9ea6a4':'#1d3f39'}"/><stop offset=".48" stop-color="${viewMode==='sem'?'#6e7774':'#18342f'}"/><stop offset="1" stop-color="${viewMode==='sem'?'#88918f':'#102823'}"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><filter id="glowRed"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+ if(!holes.length)return; const W=1200,H=560,cx=W/2,cy=H/2;const beamL=Math.max(val('beamLength'),r.span+1600),beamW=val('beamWidth');const sx=1000/beamL,drawW=1000,sy=Math.min(.65,240/beamW),margin=(W-drawW)/2;
+ const beam=svgEl('rect',{x:margin,y:cy-beamW*sy/2,width:drawW,height:beamW*sy,rx:12,class:'beam'});svg.appendChild(beam);svg.appendChild(svgEl('line',{x1:margin,x2:W-margin,y1:cy,y2:cy,class:'centerline'}));
+ // region brackets
+ if(template==='nanobeam'){const leftT=r.rows.filter(x=>x.region==='Taper'&&x.x<0),leftM=r.rows.filter(x=>x.region==='Mirror'&&x.x<0),groups=[['MIRROR',leftM],['TAPER',leftT],['CAVITY',r.rows.filter(x=>Math.abs(x.x)===Math.min(...r.rows.map(h=>Math.abs(h.x))))]];groups.forEach(([name,g])=>{if(!g.length)return;let x1=cx+Math.min(...g.map(h=>h.x))*sx,x2=cx+Math.max(...g.map(h=>h.x))*sx;if(name==='CAVITY'){x1=cx-75;x2=cx+75}const y=cy-beamW*sy/2-33;svg.appendChild(svgEl('line',{x1,x2,y1:y,y2:y,class:'dim-line'}));const t=svgEl('text',{x:(x1+x2)/2,y:y-7,'text-anchor':'middle',class:'region-label'});t.textContent=name;svg.appendChild(t)})}
+ r.rows.forEach((h,i)=>{const c=svgEl('circle',{cx:cx+h.x*sx,cy,r:Math.max(2,h.diameter*sy/2),class:`hole ${h.status==='FAIL'?'fail':h.status==='WARN'?'warn':''}`});const title=svgEl('title');title.textContent=`#${i+1} ${h.region} · x ${h.x.toFixed(1)} nm · Ø ${h.diameter.toFixed(1)} nm${h.gap!=null?` · gap ${h.gap.toFixed(1)} nm`:''}`;c.appendChild(title);svg.appendChild(c)});
+ for(let um=-7;um<=7;um++){const x=cx+um*1000*sx;if(x<margin||x>W-margin)continue;svg.appendChild(svgEl('line',{x1:x,x2:x,y1:cy+beamW*sy/2+9,y2:cy+beamW*sy/2+15,class:'dim-cap'}));const t=svgEl('text',{x,y:cy+beamW*sy/2+29,'text-anchor':'middle',class:'axis-text'});t.textContent=`${um} µm`;svg.appendChild(t)}
+ if(showDims){r.rows.forEach((h,i)=>{if(i===0||i%2===0)return;const p=r.rows[i-1];const x1=cx+p.x*sx,x2=cx+h.x*sx,y=cy+beamW*sy/2+52;svg.appendChild(svgEl('line',{x1,x2,y1:y,y2:y,class:'measure'}));const t=svgEl('text',{x:(x1+x2)/2,y:y+13,'text-anchor':'middle',class:'measure-text'});t.textContent=`${h.pitch.toFixed(0)} nm`;svg.appendChild(t)})}
+}
+function renderOverview(r){const s=$('overviewSvg');s.innerHTML='';if(!holes.length)return;const W=300,H=120,cx=150,cy=60,span=Math.max(r.span,1),sx=240/span,sy=.15; s.appendChild(svgEl('rect',{x:20,y:cy-val('beamWidth')*sy/2,width:260,height:val('beamWidth')*sy,rx:4,fill:'#17322d',stroke:'#315950'}));r.rows.forEach(h=>s.appendChild(svgEl('circle',{cx:cx+h.x*sx,cy,r:Math.max(1,h.diameter*sy/2),fill:'#06110f',stroke:h.status==='FAIL'?'#ff6f79':'#62dac7','stroke-width':.8})))}
+function renderTable(r){$('tableBody').innerHTML=r.rows.map((h,i)=>`<tr><td>${String(i+1).padStart(2,'0')}</td><td>${h.region}</td><td>${h.x.toFixed(1)}</td><td>${h.diameter.toFixed(1)}</td><td>${h.pitch==null?'—':h.pitch.toFixed(1)}</td><td>${h.gap==null?'—':h.gap.toFixed(1)}</td><td>${h.delta==null?'—':h.delta.toFixed(1)}</td><td><span class="tag ${h.status.toLowerCase()}">${h.status}</span></td></tr>`).join('')}
+function renderChecks(r){const checks=[['Minimum feature',r.minDia>=val('minFeature'),`Smallest feature ${r.minDia.toFixed(1)} nm · rule ${val('minFeature')} nm`],['Edge spacing',r.minGapObserved>=val('minGap'),`Minimum observed gap ${r.minGapObserved.toFixed(1)} nm · rule ${val('minGap')} nm`],['Polygon overlap',!r.overlap,r.overlap?'At least one adjacent opening overlaps':'No adjacent feature overlap detected'],['Mirror symmetry',r.symmetric,r.symmetric?'Geometry is symmetric about x = 0':'Left/right geometry is asymmetric']];$('checks').innerHTML=checks.map(c=>`<div class="check"><div class="check-top"><b>${c[0]}</b><small class="${c[1]?'ok':'bad'}">${c[1]?'PASS':'FAIL'}</small></div><p>${c[2]}</p></div>`).join('');$('metricPass').textContent=r.pass;$('metricWarn').textContent=r.warn;$('metricFail').textContent=r.fail}
+function renderHealth(r){$('healthScore').textContent=`${r.score}%`;$('healthDonut').style.setProperty('--health-angle',`${r.score*3.6}deg`);$('healthTitle').textContent=r.fail?'Design requires correction':r.warn?'Design passes with warnings':'Design passes current rules';$('healthText').textContent=r.fail?`${r.fail} feature-level rule violation${r.fail>1?'s':''} detected.`:r.warn?`${r.warn} taper smoothness warning${r.warn>1?'s':''}.`:'All deterministic checks pass.'}
+function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
+function download(name,type,content){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),250)}
+function exportCSV(){const r=analyze();const lines=['index,region,x_nm,diameter_nm,pitch_nm,edge_gap_nm,diameter_step_nm,status'];r.rows.forEach((h,i)=>lines.push([i+1,h.region,h.x.toFixed(3),h.diameter.toFixed(3),h.pitch??'',h.gap??'',h.delta??'',h.status].join(',')));download('nanopattern_design.csv','text/csv',lines.join('\n'));toast('CSV exported')}
+function exportSVG(){const xml=new XMLSerializer().serializeToString($('svg'));download('nanopattern_design.svg','image/svg+xml',`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560">${$('svg').innerHTML}</svg>`);toast('SVG exported')}
+
+function autoFixSpacing(target=val('minGap')){
+ const dmax=Math.max(val('mirrorDia'),val('cavityDia')); const requiredMirror=target+val('mirrorDia'); const requiredCavity=target+val('cavityDia'); let changed=[];
+ if(val('mirrorPitch')<requiredMirror){setVal('mirrorPitch',requiredMirror);changed.push(`mirror pitch → ${requiredMirror.toFixed(0)} nm`)}
+ if(val('cavityPitch')<requiredCavity){setVal('cavityPitch',requiredCavity);changed.push(`cavity pitch → ${requiredCavity.toFixed(0)} nm`)}
+ const cavityRequired=target+val('cavityDia'); if(val('cavityGap')<cavityRequired){setVal('cavityGap',cavityRequired);changed.push(`central separation → ${cavityRequired.toFixed(0)} nm`)}
+ buildPattern();return changed;
+}
+function smoothTaper(){const step=Math.abs(val('cavityDia')-val('mirrorDia'))/Math.max(1,val('taperCount')-1);if(step<=val('maxTaperStep'))return ['Taper already satisfies the current diameter-step preference.'];const needed=Math.ceil(Math.abs(val('cavityDia')-val('mirrorDia'))/val('maxTaperStep'))+1;setVal('taperCount',needed);buildPattern();return [`Increased taper count to ${needed} per side so ΔØ stays within ${val('maxTaperStep')} nm.`]}
+function designSummary(){const r=analyze();return `This ${template==='nanobeam'?'phononic nanobeam':'periodic array'} contains <strong>${holes.length} circular features</strong> over ${(r.span/1000).toFixed(2)} µm. Mirror Ø is ${val('mirrorDia')} nm at ${val('mirrorPitch')} nm pitch; cavity Ø is ${val('cavityDia')} nm. The minimum edge gap is <strong>${r.minGapObserved.toFixed(1)} nm</strong>. ${r.fail?`${r.fail} feature-level DRC violations remain.`:'The current rule deck passes.'}`}
+function parseNumber(s,patterns){for(const re of patterns){const m=s.match(re);if(m)return +m[1]}return null}
+function runCopilot(input){
+ const raw=input.trim();if(!raw)return;addMsg('user',escapeHtml(raw));const s=raw.toLowerCase();let actions=[],response='';let changed=false;
+ const minGap=parseNumber(s,[/(?:minimum|min)\s+(?:edge\s+)?gap(?:\s+(?:to|of|at|at least|>=))?\s*(\d+(?:\.\d+)?)\s*(?:nm)?/,/gap\s*(?:>=|to|of|at least)\s*(\d+(?:\.\d+)?)\s*(?:nm)?/]);
+ const md=parseNumber(s,[/mirror\s+(?:diameter|dia|ø).*?(\d+(?:\.\d+)?)\s*(?:nm)?/]);
+ const cd=parseNumber(s,[/cavity\s+(?:diameter|dia|ø).*?(\d+(?:\.\d+)?)\s*(?:nm)?/]);
+ const mp=parseNumber(s,[/mirror\s+pitch.*?(\d+(?:\.\d+)?)\s*(?:nm)?/]);
+ const cp=parseNumber(s,[/cavity\s+pitch.*?(\d+(?:\.\d+)?)\s*(?:nm)?/]);
+ const tc=parseNumber(s,[/taper(?:\s+holes|\s+count)?(?:\s+(?:to|of))?\s*(\d+)/]);
+ const mc=parseNumber(s,[/mirror(?:\s+holes|\s+count)?(?:\s+(?:to|of))?\s*(\d+)/]);
+ if(minGap!==null){setVal('minGap',minGap);actions.push(`minimum-gap rule → ${minGap} nm`);changed=true}
+ if(md!==null){setVal('mirrorDia',md);actions.push(`mirror Ø → ${md} nm`);changed=true}
+ if(cd!==null){setVal('cavityDia',cd);actions.push(`cavity Ø → ${cd} nm`);changed=true}
+ if(mp!==null){setVal('mirrorPitch',mp);actions.push(`mirror pitch → ${mp} nm`);changed=true}
+ if(cp!==null){setVal('cavityPitch',cp);actions.push(`cavity pitch → ${cp} nm`);changed=true}
+ if(tc!==null&&/taper/.test(s)){setVal('taperCount',Math.round(tc));actions.push(`taper count → ${Math.round(tc)} / side`);changed=true}
+ if(mc!==null&&/mirror/.test(s)&&/holes|count/.test(s)){setVal('mirrorCount',Math.round(mc));actions.push(`mirror count → ${Math.round(mc)} / side`);changed=true}
+ if(changed)buildPattern();
+ if(/fix|repair|correct|make every gap|ensure.*gap/.test(s)){const t=minGap??val('minGap');const fixes=autoFixSpacing(t);actions.push(...fixes);response=fixes.length?`I applied a spacing repair against the ${t} nm rule.`:`No spacing repair was necessary; the current pitches already satisfy ${t} nm.`}
+ if(/smooth|optimi[sz]e taper|taper smoothness/.test(s)){actions.push(...smoothTaper());response='I checked taper continuity and adjusted the taper count if required.'}
+ if(/explain|summary|describe|what.*design|analy[sz]e/.test(s)){response=designSummary()}
+ if(/why.*fail|explain.*fail|diagnos|violation/.test(s)){const r=analyze(),bad=r.rows.filter(x=>x.status==='FAIL');response=bad.length?`I found <strong>${bad.length} failing features</strong>. ${[...new Set(bad.flatMap(x=>x.reasons))].join('; ')}.`:'There are no current DRC failures.'}
+ if(/reset|demo|default/.test(s)){loadDemo();actions.push('restored reference nanobeam');response='Reference nanobeam restored and reverified.'}
+ if(!response&&actions.length){const r=analyze();response=`Applied <strong>${actions.join(', ')}</strong>. ${r.fail?`${r.fail} violations remain.`:'The design passes the active rule deck.'}`}
+ if(!response){response=`I couldn't safely translate that into a geometry operation yet. I currently understand diameter, pitch, hole counts, minimum-gap rules, <strong>fix DRC</strong>, <strong>smooth taper</strong>, <strong>explain design</strong>, and <strong>reset</strong>.<span class="cmd">Example: “set cavity diameter to 230 nm and fix all DRC failures.”</span>`}
+ addMsg('ai',response);
+}
+function addMsg(type,html){const b=$('assistantBox');b.insertAdjacentHTML('beforeend',`<div class="msg ${type}">${html}</div>`);b.scrollTop=b.scrollHeight}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function loadDemo(){template='nanobeam';setVal('beamWidth',500);setVal('beamLength',15000);setVal('mirrorCount',8);setVal('taperCount',5);setVal('mirrorDia',250);setVal('cavityDia',275);setVal('mirrorPitch',550);setVal('cavityPitch',500);setVal('cavityGap',500);setVal('minFeature',60);setVal('minGap',80);setVal('maxTaperStep',30);document.querySelectorAll('.mode-card').forEach(x=>x.classList.toggle('active',x.dataset.template==='nanobeam'));$('templateName').textContent='phononic_nanobeam';buildPattern()}
+function importCSV(file){const fr=new FileReader();fr.onload=()=>{const lines=String(fr.result).trim().split(/\r?\n/),parsed=[];for(let i=1;i<lines.length;i++){const p=lines[i].split(',');if(isFinite(+p[0])&&isFinite(+p[1]))parsed.push({x:+p[0],diameter:+p[1],region:(p[2]||'Imported').trim()})}if(parsed.length){holes=parsed;analyzeAndRender();$('designName').textContent=file.name.replace(/\.[^.]+$/,'');$('templateName').textContent='imported_csv';toast(`${parsed.length} features imported`)}};fr.readAsText(file)}
+
+['beamWidth','beamLength','mirrorCount','taperCount','mirrorDia','cavityDia','mirrorPitch','cavityPitch','cavityGap','minFeature','minGap','maxTaperStep'].forEach(id=>$(id).addEventListener('change',buildPattern));
+document.querySelectorAll('.mode-card').forEach(c=>c.onclick=()=>{template=c.dataset.template;document.querySelectorAll('.mode-card').forEach(x=>x.classList.toggle('active',x===c));$('templateName').textContent=template==='nanobeam'?'phononic_nanobeam':'periodic_array';buildPattern()});
+$('verify').onclick=()=>{buildPattern();toast('Geometry regenerated + verified')};$('newDesign').onclick=loadDemo;$('exportCsv').onclick=exportCSV;$('exportSvg').onclick=exportSVG;$('csvFile').onchange=e=>e.target.files[0]&&importCSV(e.target.files[0]);
+$('aiRun').onclick=()=>{const q=$('aiInput').value;$('aiInput').value='';runCopilot(q)};$('aiInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('aiRun').click()}});document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>runCopilot(c.dataset.command));
+$('toggleDims').onclick=e=>{showDims=!showDims;e.currentTarget.classList.toggle('active',showDims);renderSvg(analyze())};$('fitView').onclick=()=>{renderSvg(analyze());toast('View fitted to device')};document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{viewMode=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));renderSvg(analyze())});
+$('viewer').addEventListener('mousemove',e=>{const r=e.currentTarget.getBoundingClientRect();const x=((e.clientX-r.left)/r.width-.5)*val('beamLength')/1000;const y=(.5-(e.clientY-r.top)/r.height)*val('beamWidth')/1000;$('statusCursor').textContent=`x ${x.toFixed(3)} µm · y ${y.toFixed(3)} µm`});
+loadDemo();
+</script>
+</body>
+</html>
